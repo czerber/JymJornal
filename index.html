@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymJournal - Личный дневник тренировок</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a2530);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        .current-date {
+            font-size: 18px;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+        }
+        
+        /* Main Content */
+        main {
+            padding: 30px 0;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .welcome-section h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .welcome-section p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 25px;
+            font-size: 1em;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, var(--secondary), #2980b9);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-accent {
+            background: linear-gradient(to right, var(--accent), #c0392b);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-accent:hover {
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #27ae60);
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.4);
+        }
+        
+        /* Workout Diary */
+        .workout-diary {
+            display: none;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            font-size: 24px;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        input, select, textarea {
+            width: 85%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        .exercise-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .sets-reps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        /* Added Exercises */
+        .added-exercises {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .exercise-card {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--success);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .exercise-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .exercise-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .exercise-card-muscle {
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .delete-exercise {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        /* Custom Exercise Form */
+        .custom-exercise-form {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-top: 15px;
+            border: 2px dashed #3498db;
+        }
+        
+        .custom-exercise-form.hidden {
+            display: none;
+        }
+        
+        /* Previous Workouts */
+        .previous-workouts {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .workouts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .workout-item {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--secondary);
+            padding: 20px;
+            border-radius: var(--radius);
+            transition: transform 0.3s;
+        }
+        
+        .workout-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .workout-date {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .workout-exercises-count {
+            background-color: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .workout-exercises {
+            margin-top: 10px;
+        }
+        
+        .workout-exercise-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .workout-exercise-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Progress Stats */
+        .progress-stats {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: var(--radius);
+        }
+        
+        .progress-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .progress-up {
+            background-color: var(--success);
+        }
+        
+        .progress-down {
+            background-color: var(--accent);
+        }
+        
+        .progress-neutral {
+            background-color: var(--warning);
+        }
+        
+        .progress-info h4 {
+            margin-bottom: 5px;
+        }
+        
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Utility */
+        .hidden {
+            display: none;
+        }
+        
+        /* Add Exercise Button */
+        .add-exercise-btn {
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .current-date {
+                font-size: 16px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .sets-reps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .workout-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .exercise-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .workout-diary, .previous-workouts, .progress-stats {
+                padding: 20px 15px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+        }
+        
+        /* Modal for import/export */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .data-export {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* Exercise sets styling */
+        .set-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .set-number {
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 30px;
+        }
+        
+        .delete-set {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-set-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>GymJournal</span>
+                </div>
+                <div class="current-date" id="currentDate"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="welcome-section" id="welcomeSection">
+            <h2>Добро пожаловать в ваш личный дневник тренировок!</h2>
+            <p>Здесь вы можете записывать свои тренировки, отслеживать прогресс и анализировать свои результаты. Все данные сохраняются локально в вашем браузере.</p>
+            <button class="btn" id="startWorkoutBtn">
+                <i class="fas fa-plus-circle"></i> Начать тренировку
+            </button>
+        </section>
+        
+        <section class="workout-diary" id="workoutDiary">
+            <h2 class="section-title">Запись тренировки</h2>
+            
+            <div class="form-group">
+                <label for="workoutDate">Дата тренировки</label>
+                <input type="date" id="workoutDate" required>
+            </div>
+            
+            <div id="workoutFormContainer">
+                <!-- Exercise forms will be added here dynamically -->
+            </div>
+            
+            <button class="btn btn-success add-exercise-btn" id="addNewExerciseBtn">
+                <i class="fas fa-plus-circle"></i> Добавить упражнение
+            </button>
+            
+            <div class="added-exercises" id="addedExercisesContainer">
+                <h3 class="section-title">Добавленные упражнения</h3>
+                <div id="addedExercisesList">
+                    <!-- Added exercises will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="workoutNotes">Примечания к тренировке</label>
+                <textarea id="workoutNotes" rows="4" placeholder="Заметки о тренировке, самочувствии и т.д."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <button class="btn" id="saveWorkoutBtn">
+                    <i class="fas fa-save"></i> Сохранить тренировку
+                </button>
+                <button type="button" class="btn btn-accent" id="cancelWorkoutBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+            </div>
+        </section>
+        
+        <section class="previous-workouts" id="previousWorkouts">
+            <h2 class="section-title">Предыдущие тренировки</h2>
+            <div class="workouts-list" id="workoutsList">
+                <!-- Workout items will be added here dynamically -->
+            </div>
+        </section>
+        
+        <section class="progress-stats" id="progressStats">
+            <h2 class="section-title">Статистика прогресса</h2>
+            <div id="progressList">
+                <!-- Progress items will be added here dynamically -->
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container footer-content">
+            <div class="copyright">
+                <i class="fas fa-dumbbell"></i> GymJournal &copy; 2023
+            </div>
+            <div class="data-controls">
+                <button class="btn btn-small" id="exportDataBtn">
+                    <i class="fas fa-file-export"></i> Экспорт данных
+                </button>
+                <button class="btn btn-small" id="importDataBtn">
+                    <i class="fas fa-file-import"></i> Импорт данных
+                </button>
+                <button class="btn btn-small btn-accent" id="clearDataBtn">
+                    <i class="fas fa-trash-alt"></i> Очистить данные
+                </button>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modal for import/export -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Экспорт данных тренировок</h3>
+                <button class="close-modal" id="closeExportModal">&times;</button>
+            </div>
+            <p>Скопируйте содержимое ниже и сохраните в файл. Для импорта вставьте данные в соответствующее поле.</p>
+            <div class="data-export" id="exportDataContent"></div>
+            <button class="btn" id="copyDataBtn">
+                <i class="fas fa-copy"></i> Копировать данные
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Импорт данных тренировок</h3>
+                <button class="close-modal" id="closeImportModal">&times;</button>
+            </div>
+            <p>Вставьте ранее экспортированные данные в поле ниже:</p>
+            <textarea id="importDataText" rows="10" placeholder="Вставьте данные экспорта здесь..."></textarea>
+            <div class="form-row" style="margin-top: 20px;">
+                <button class="btn" id="confirmImportBtn">
+                    <i class="fas fa-file-import"></i> Импортировать данные
+                </button>
+                <button class="btn btn-accent" id="cancelImportBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current date display
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('ru-RU', options);
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            loadWorkouts();
+            updateProgressStats();
+            loadCustomExercises();
+            
+            // Update date every minute
+            setInterval(updateCurrentDate, 60000);
+            
+            // Start workout button
+            document.getElementById('startWorkoutBtn').addEventListener('click', function() {
+                document.getElementById('welcomeSection').style.display = 'none';
+                document.getElementById('workoutDiary').style.display = 'block';
+                document.getElementById('workoutDate').valueAsDate = new Date();
+                
+                // Clear previous data
+                document.getElementById('addedExercisesList').innerHTML = '';
+                document.getElementById('workoutFormContainer').innerHTML = '';
+                document.getElementById('workoutNotes').value = '';
+                
+                // Reset exercise counter
+                exerciseCounter = 0;
+                
+                // Add first exercise form
+                addExerciseForm();
+            });
+            
+            // Cancel workout button
+            document.getElementById('cancelWorkoutBtn').addEventListener('click', function() {
+                document.getElementById('welcomeSection').style.display = 'block';
+                document.getElementById('workoutDiary').style.display = 'none';
+            });
+            
+            // Add new exercise button
+            document.getElementById('addNewExerciseBtn').addEventListener('click', addExerciseForm);
+            
+            // Save workout button
+            document.getElementById('saveWorkoutBtn').addEventListener('click', saveWorkout);
+            
+            // Export data button
+            document.getElementById('exportDataBtn').addEventListener('click', showExportModal);
+            
+            // Import data button
+            document.getElementById('importDataBtn').addEventListener('click', showImportModal);
+            
+            // Clear data button
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+            
+            // Modal close buttons
+            document.getElementById('closeExportModal').addEventListener('click', function() {
+                document.getElementById('exportModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeImportModal').addEventListener('click', function() {
+                document.getElementById('importModal').style.display = 'none';
+            });
+            
+            document.getElementById('cancelImportBtn').addEventListener('click', function() {
+                document.getElementById('importModal').style.display = 'none';
+            });
+            
+            // Copy data button
+            document.getElementById('copyDataBtn').addEventListener('click', copyExportData);
+            
+            // Confirm import button
+            document.getElementById('confirmImportBtn').addEventListener('click', importData);
+        });
+        
+        // Exercise database with custom exercises
+        let exerciseCounter = 0;
+        let customExercises = {};
+        let exercisesByMuscleGroup = {
+            'Грудь': ['Жим штанги лежа', 'Жим гантелей лежа', 'Жим в тренажере', 'Разводка гантелей', 'Отжимания на брусьях', 'Кроссовер'],
+            'Спина': ['Тяга верхнего блока', 'Тяга нижнего блока', 'Тяга штанги в наклоне', 'Тяга гантели в наклоне', 'Подтягивания', 'Гиперэкстензия'],
+            'Ноги': ['Приседания со штангой', 'Жим ногами', 'Выпады', 'Разгибание ног', 'Сгибание ног', 'Подъем на носки'],
+            'Плечи': ['Жим штанги стоя', 'Жим гантелей сидя', 'Махи гантелями в стороны', 'Махи гантелями вперед', 'Тяга штанги к подбородку', 'Разведение в тренажере'],
+            'Бицепс': ['Подъем штанги на бицепс', 'Подъем гантелей на бицепс', 'Подъем на бицепс в тренажере', 'Молотки', 'Концентрированный подъем'],
+            'Трицепс': ['Жим лежа узким хватом', 'Французский жим', 'Разгибание на блоке', 'Отжимания от скамьи', 'Кикбэки'],
+            'Пресс': ['Скручивания', 'Подъем ног в висе', 'Планка', 'Русский твист', 'Велосипед'],
+            'Кардио': ['Беговая дорожка', 'Велотренажер', 'Эллипс', 'Степпер', 'Скакалка']
+        };
+        
+        // Load custom exercises from localStorage
+        function loadCustomExercises() {
+            try {
+                const savedCustomExercises = localStorage.getItem('gymjournal_custom_exercises');
+                if (savedCustomExercises) {
+                    customExercises = JSON.parse(savedCustomExercises);
+                    
+                    // Merge custom exercises with default ones
+                    for (const muscleGroup in customExercises) {
+                        if (exercisesByMuscleGroup[muscleGroup]) {
+                            // Remove duplicates
+                            const defaultExercises = exercisesByMuscleGroup[muscleGroup];
+                            const customExercisesForGroup = customExercises[muscleGroup];
+                            const combined = [...defaultExercises];
+                            
+                            customExercisesForGroup.forEach(exercise => {
+                                if (!combined.includes(exercise)) {
+                                    combined.push(exercise);
+                                }
+                            });
+                            
+                            exercisesByMuscleGroup[muscleGroup] = combined;
+                        } else {
+                            exercisesByMuscleGroup[muscleGroup] = customExercises[muscleGroup];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки пользовательских упражнений:', error);
+                customExercises = {};
+            }
+        }
+        
+        // Add a custom exercise
+        function addCustomExercise(muscleGroup, exerciseName) {
+            if (!muscleGroup || !exerciseName) return false;
+            
+            // Initialize muscle group if not exists
+            if (!customExercises[muscleGroup]) {
+                customExercises[muscleGroup] = [];
+            }
+            
+            // Add exercise if not already in list
+            if (!customExercises[muscleGroup].includes(exerciseName)) {
+                customExercises[muscleGroup].push(exerciseName);
+                
+                // Save to localStorage
+                localStorage.setItem('gymjournal_custom_exercises', JSON.stringify(customExercises));
+                
+                // Update exercises list
+                if (!exercisesByMuscleGroup[muscleGroup]) {
+                    exercisesByMuscleGroup[muscleGroup] = [];
+                }
+                
+                if (!exercisesByMuscleGroup[muscleGroup].includes(exerciseName)) {
+                    exercisesByMuscleGroup[muscleGroup].push(exerciseName);
+                }
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Add exercise form
+        function addExerciseForm() {
+            exerciseCounter++;
+            const formId = `exerciseForm_${exerciseCounter}`;
+            
+            const formHTML = `
+                <div class="exercise-form" id="${formId}">
+                    <h3>Упражнение #${exerciseCounter}</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="muscleGroup_${exerciseCounter}">Группа мышц</label>
+                            <select id="muscleGroup_${exerciseCounter}" class="muscle-group-select" required>
+                                <option value="">Выберите группу мышц</option>
+                                <option value="Грудь">Грудь</option>
+                                <option value="Спина">Спина</option>
+                                <option value="Ноги">Ноги</option>
+                                <option value="Плечи">Плечи</option>
+                                <option value="Бицепс">Бицепс</option>
+                                <option value="Трицепс">Трицепс</option>
+                                <option value="Пресс">Пресс</option>
+                                <option value="Кардио">Кардио</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-col">
+                            <label for="exercise_${exerciseCounter}">Упражнение</label>
+                            <select id="exercise_${exerciseCounter}" class="exercise-select" required>
+                                <option value="">Выберите упражнение</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-exercise-form hidden" id="customExerciseForm_${exerciseCounter}">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="customExerciseName_${exerciseCounter}">Название упражнения</label>
+                                <input type="text" id="customExerciseName_${exerciseCounter}" placeholder="Введите название упражнения">
+                            </div>
+                            <div class="form-col" style="align-self: flex-end;">
+                                <button type="button" class="btn btn-small" id="saveCustomExerciseBtn_${exerciseCounter}">Добавить упражнение</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="text-align: right;">
+                        <button type="button" class="btn btn-small" onclick="toggleCustomExerciseForm('${formId}')">
+                            <i class="fas fa-plus"></i> Добавить свое упражнение
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Подходы и повторения</label>
+                        <div id="setsContainer_${exerciseCounter}">
+                            <!-- Dynamic sets will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-small add-set-btn" onclick="addSetRow('${exerciseCounter}')">
+                            <i class="fas fa-plus"></i> Добавить подход
+                        </button>
+                    </div>
+                    
+                    <div class="form-row">
+                        <button type="button" class="btn btn-success" onclick="saveExercise('${exerciseCounter}')">
+                            <i class="fas fa-check"></i> Сохранить упражнение
+                        </button>
+                        <button type="button" class="btn btn-accent btn-small" onclick="removeExerciseForm('${formId}')">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add form to container
+            const container = document.getElementById('workoutFormContainer');
+            const formDiv = document.createElement('div');
+            formDiv.innerHTML = formHTML;
+            container.appendChild(formDiv);
+            
+            // Add event listener for muscle group change
+            const muscleGroupSelect = document.getElementById(`muscleGroup_${exerciseCounter}`);
+            muscleGroupSelect.addEventListener('change', function() {
+                updateExercisesForForm(exerciseCounter);
+            });
+            
+            // Add event listener for save custom exercise button
+            document.getElementById(`saveCustomExerciseBtn_${exerciseCounter}`).addEventListener('click', function() {
+                saveCustomExercise(exerciseCounter);
+            });
+            
+            // Add initial set row
+            addSetRow(exerciseCounter);
+        }
+        
+        // Remove exercise form
+        function removeExerciseForm(formId) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.remove();
+            }
+        }
+        
+        // Update exercises based on selected muscle group for a specific form
+        function updateExercisesForForm(formNumber) {
+            const muscleGroup = document.getElementById(`muscleGroup_${formNumber}`).value;
+            const exerciseSelect = document.getElementById(`exercise_${formNumber}`);
+            
+            // Clear current options
+            exerciseSelect.innerHTML = '<option value="">Выберите упражнение</option>';
+            
+            // Add exercises for selected muscle group
+            if (muscleGroup && exercisesByMuscleGroup[muscleGroup]) {
+                exercisesByMuscleGroup[muscleGroup].forEach(exercise => {
+                    const option = document.createElement('option');
+                    option.value = exercise;
+                    option.textContent = exercise;
+                    exerciseSelect.appendChild(option);
+                });
+            }
+            
+            // Add "Другое" option
+            const otherOption = document.createElement('option');
+            otherOption.value = 'other';
+            otherOption.textContent = 'Другое (добавить свое)';
+            exerciseSelect.appendChild(otherOption);
+        }
+        
+        // Toggle custom exercise form
+        function toggleCustomExerciseForm(formId) {
+            const formNumber = formId.split('_')[1];
+            const customForm = document.getElementById(`customExerciseForm_${formNumber}`);
+            if (customForm) {
+                customForm.classList.toggle('hidden');
+            }
+        }
+        
+        // Save custom exercise
+        function saveCustomExercise(formNumber) {
+            const muscleGroup = document.getElementById(`muscleGroup_${formNumber}`).value;
+            const exerciseName = document.getElementById(`customExerciseName_${formNumber}`).value;
+            
+            if (!muscleGroup || !exerciseName) {
+                alert('Пожалуйста, выберите группу мышц и введите название упражнения');
+                return;
+            }
+            
+            // Add custom exercise
+            const success = addCustomExercise(muscleGroup, exerciseName);
+            
+            if (success) {
+                alert(`Упражнение "${exerciseName}" успешно добавлено в группу "${muscleGroup}"!`);
+                
+                // Update exercises dropdown
+                const exerciseSelect = document.getElementById(`exercise_${formNumber}`);
+                const newOption = document.createElement('option');
+                newOption.value = exerciseName;
+                newOption.textContent = exerciseName;
+                exerciseSelect.insertBefore(newOption, exerciseSelect.lastChild);
+                
+                // Select the new exercise
+                exerciseSelect.value = exerciseName;
+                
+                // Hide custom exercise form
+                const customForm = document.getElementById(`customExerciseForm_${formNumber}`);
+                if (customForm) {
+                    customForm.classList.add('hidden');
+                }
+                
+                // Clear custom exercise name field
+                document.getElementById(`customExerciseName_${formNumber}`).value = '';
+            } else {
+                alert('Это упражнение уже существует в списке!');
+            }
+        }
+        
+        // Add a set row to the exercise form
+        function addSetRow(formNumber) {
+            const container = document.getElementById(`setsContainer_${formNumber}`);
+            if (!container) return;
+            
+            const setNumber = container.children.length + 1;
+            
+            const setDiv = document.createElement('div');
+            setDiv.className = 'set-item';
+            setDiv.innerHTML = `
+                <div class="set-number">${setNumber}</div>
+                <input type="number" min="1" placeholder="Вес (кг)" class="set-weight" required>
+                <input type="number" min="1" placeholder="Повторения" class="set-reps" required>
+                <button type="button" class="delete-set" onclick="deleteSetRow(this, '${formNumber}')">×</button>
+            `;
+            
+            container.appendChild(setDiv);
+        }
+        
+        // Delete a set row
+        function deleteSetRow(button, formNumber) {
+            const setItem = button.closest('.set-item');
+            if (setItem) {
+                setItem.remove();
+                
+                // Update set numbers
+                const container = document.getElementById(`setsContainer_${formNumber}`);
+                if (container) {
+                    const setItems = container.querySelectorAll('.set-item');
+                    setItems.forEach((item, index) => {
+                        const setNumberElement = item.querySelector('.set-number');
+                        if (setNumberElement) {
+                            setNumberElement.textContent = index + 1;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Save exercise to the list
+        function saveExercise(formNumber) {
+            const muscleGroup = document.getElementById(`muscleGroup_${formNumber}`).value;
+            const exerciseSelect = document.getElementById(`exercise_${formNumber}`);
+            const exercise = exerciseSelect ? exerciseSelect.value : '';
+            
+            if (!muscleGroup || !exercise || exercise === 'other') {
+                alert('Пожалуйста, выберите группу мышц и упражнение');
+                return;
+            }
+            
+            // Get sets data
+            const container = document.getElementById(`setsContainer_${formNumber}`);
+            if (!container) return;
+            
+            const setItems = container.querySelectorAll('.set-item');
+            const sets = [];
+            
+            setItems.forEach(item => {
+                const weightInput = item.querySelector('.set-weight');
+                const repsInput = item.querySelector('.set-reps');
+                const weight = weightInput ? weightInput.value : '';
+                const reps = repsInput ? repsInput.value : '';
+                
+                if (weight && reps) {
+                    sets.push({
+                        weight: parseFloat(weight),
+                        reps: parseInt(reps)
+                    });
+                }
+            });
+            
+            if (sets.length === 0) {
+                alert('Пожалуйста, добавьте хотя бы один подход');
+                return;
+            }
+            
+            // Create exercise object
+            const exerciseObj = {
+                id: Date.now() + Math.random(),
+                muscleGroup: muscleGroup,
+                name: exercise,
+                sets: sets,
+                formNumber: formNumber
+            };
+            
+            // Add to added exercises list
+            addExerciseToWorkout(exerciseObj);
+            
+            // Remove the form
+            removeExerciseForm(`exerciseForm_${formNumber}`);
+            
+            // Show message
+            alert(`Упражнение "${exercise}" добавлено к тренировке!`);
+        }
+        
+        // Add exercise to workout list
+        function addExerciseToWorkout(exercise) {
+            const container = document.getElementById('addedExercisesList');
+            if (!container) return;
+            
+            const exerciseCard = document.createElement('div');
+            exerciseCard.className = 'exercise-card';
+            exerciseCard.id = `exerciseCard_${exercise.id}`;
+            
+            // Calculate total volume and max weight
+            let totalVolume = 0;
+            let maxWeight = 0;
+            
+            if (exercise.sets && Array.isArray(exercise.sets)) {
+                exercise.sets.forEach(set => {
+                    if (set && set.weight && set.reps) {
+                        totalVolume += set.weight * set.reps;
+                        if (set.weight > maxWeight) maxWeight = set.weight;
+                    }
+                });
+            }
+            
+            exerciseCard.innerHTML = `
+                <button class="delete-exercise" onclick="removeExerciseFromWorkout('${exercise.id}')">×</button>
+                <div class="exercise-card-header">
+                    <div class="exercise-card-title">${exercise.name}</div>
+                    <div class="exercise-card-muscle">${exercise.muscleGroup}</div>
+                </div>
+                <div class="workout-exercises">
+                    ${exercise.sets && Array.isArray(exercise.sets) ? exercise.sets.map((set, index) => `
+                        <div class="workout-exercise-item">
+                            <strong>Подход ${index + 1}:</strong> ${set.weight} кг × ${set.reps} повторений
+                        </div>
+                    `).join('') : ''}
+                </div>
+                <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                    <strong>Общий объем:</strong> ${totalVolume} кг | 
+                    <strong>Макс. вес:</strong> ${maxWeight} кг
+                </div>
+            `;
+            
+            container.appendChild(exerciseCard);
+        }
+        
+        // Remove exercise from workout
+        function removeExerciseFromWorkout(exerciseId) {
+            const exerciseCard = document.getElementById(`exerciseCard_${exerciseId}`);
+            if (exerciseCard) {
+                exerciseCard.remove();
+            }
+        }
+        
+        // Save workout to local storage
+        function saveWorkout() {
+            const dateInput = document.getElementById('workoutDate');
+            const date = dateInput ? dateInput.value : '';
+            const notes = document.getElementById('workoutNotes') ? document.getElementById('workoutNotes').value : '';
+            
+            if (!date) {
+                alert('Пожалуйста, укажите дату тренировки');
+                return;
+            }
+            
+            // Get all added exercises
+            const exerciseCards = document.querySelectorAll('.exercise-card');
+            
+            if (exerciseCards.length === 0) {
+                alert('Пожалуйста, добавьте хотя бы одно упражнение');
+                return;
+            }
+            
+            const exercises = [];
+            
+            exerciseCards.forEach(card => {
+                const exerciseNameElement = card.querySelector('.exercise-card-title');
+                const muscleGroupElement = card.querySelector('.exercise-card-muscle');
+                
+                if (!exerciseNameElement || !muscleGroupElement) return;
+                
+                const exerciseName = exerciseNameElement.textContent;
+                const muscleGroup = muscleGroupElement.textContent;
+                
+                // Get sets data from the card
+                const setItems = card.querySelectorAll('.workout-exercise-item');
+                const sets = [];
+                
+                setItems.forEach(item => {
+                    const text = item.textContent;
+                    const match = text.match(/Подход \d+: (\d+(\.\d+)?) кг × (\d+) повторений/);
+                    
+                    if (match) {
+                        sets.push({
+                            weight: parseFloat(match[1]),
+                            reps: parseInt(match[3])
+                        });
+                    }
+                });
+                
+                exercises.push({
+                    muscleGroup: muscleGroup,
+                    name: exerciseName,
+                    sets: sets
+                });
+            });
+            
+            // Create workout object
+            const workout = {
+                id: Date.now(),
+                date: date,
+                exercises: exercises,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get existing workouts from local storage
+            let workouts = [];
+            try {
+                const savedWorkouts = localStorage.getItem('gymjournal_workouts');
+                if (savedWorkouts) {
+                    workouts = JSON.parse(savedWorkouts);
+                    if (!Array.isArray(workouts)) {
+                        workouts = [];
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки тренировок:', error);
+                workouts = [];
+            }
+            
+            // Add new workout
+            workouts.push(workout);
+            
+            // Save back to local storage
+            try {
+                localStorage.setItem('gymjournal_workouts', JSON.stringify(workouts));
+            } catch (error) {
+                console.error('Ошибка сохранения тренировки:', error);
+                alert('Ошибка сохранения тренировки. Проверьте, достаточно ли места в хранилище.');
+                return;
+            }
+            
+            // Show success message
+            alert(`Тренировка сохранена успешно! Добавлено ${exercises.length} упражнений.`);
+            
+            // Reset and show welcome section
+            document.getElementById('welcomeSection').style.display = 'block';
+            document.getElementById('workoutDiary').style.display = 'none';
+            
+            // Update UI
+            loadWorkouts();
+            updateProgressStats();
+        }
+        
+        // Load workouts from local storage
+        function loadWorkouts() {
+            let workouts = [];
+            try {
+                const savedWorkouts = localStorage.getItem('gymjournal_workouts');
+                if (savedWorkouts) {
+                    workouts = JSON.parse(savedWorkouts);
+                    if (!Array.isArray(workouts)) {
+                        workouts = [];
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки тренировок:', error);
+                workouts = [];
+            }
+            
+            const workoutsList = document.getElementById('workoutsList');
+            if (!workoutsList) return;
+            
+            // Clear current list
+            workoutsList.innerHTML = '';
+            
+            // Sort workouts by date (newest first)
+            workouts.sort((a, b) => {
+                const dateA = a.date ? new Date(a.date) : new Date(0);
+                const dateB = b.date ? new Date(b.date) : new Date(0);
+                return dateB - dateA;
+            });
+            
+            if (workouts.length === 0) {
+                workoutsList.innerHTML = '<p style="text-align: center; color: #666;">У вас еще нет сохраненных тренировок.</p>';
+                return;
+            }
+            
+            // Add workouts to the list
+            workouts.forEach(workout => {
+                const workoutItem = document.createElement('div');
+                workoutItem.className = 'workout-item';
+                
+                // Format date
+                let formattedDate = 'Дата не указана';
+                if (workout.date) {
+                    try {
+                        const dateObj = new Date(workout.date);
+                        formattedDate = dateObj.toLocaleDateString('ru-RU', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    } catch (error) {
+                        console.error('Ошибка форматирования даты:', error);
+                    }
+                }
+                
+                // Calculate total workout volume
+                let totalWorkoutVolume = 0;
+                let exerciseCount = 0;
+                let exercisesHTML = '';
+                
+                if (workout.exercises && Array.isArray(workout.exercises)) {
+                    exerciseCount = workout.exercises.length;
+                    
+                    workout.exercises.forEach(exercise => {
+                        if (!exercise || !exercise.name || !exercise.muscleGroup) return;
+                        
+                        // Calculate exercise volume
+                        let exerciseVolume = 0;
+                        let maxWeight = 0;
+                        
+                        if (exercise.sets && Array.isArray(exercise.sets)) {
+                            exercise.sets.forEach(set => {
+                                if (set && set.weight && set.reps) {
+                                    exerciseVolume += set.weight * set.reps;
+                                    if (set.weight > maxWeight) maxWeight = set.weight;
+                                }
+                            });
+                        }
+                        
+                        totalWorkoutVolume += exerciseVolume;
+                        
+                        const setsText = exercise.sets && Array.isArray(exercise.sets) ? 
+                            exercise.sets.map((set, index) => `Подход ${index + 1}: ${set.weight}кг × ${set.reps}`).join(', ') : 
+                            'Нет данных о подходах';
+                        
+                        exercisesHTML += `
+                            <div class="workout-exercise-item">
+                                <strong>${exercise.muscleGroup}: ${exercise.name}</strong><br>
+                                <span style="font-size: 14px; color: #666;">
+                                    ${setsText} |
+                                    Объем: ${exerciseVolume}кг, Макс: ${maxWeight}кг
+                                </span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                workoutItem.innerHTML = `
+                    <div class="workout-header">
+                        <div class="workout-date">${formattedDate}</div>
+                        <div class="workout-exercises-count">${exerciseCount} упражнений</div>
+                    </div>
+                    <div class="workout-exercises">
+                        ${exercisesHTML || '<p>Нет данных об упражнениях</p>'}
+                    </div>
+                    ${totalWorkoutVolume > 0 ? `
+                        <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                            <strong>Общий объем тренировки:</strong> ${totalWorkoutVolume} кг
+                        </div>
+                    ` : ''}
+                    ${workout.notes ? `<div style="margin-top: 10px; font-style: italic;">${workout.notes}</div>` : ''}
+                `;
+                
+                workoutsList.appendChild(workoutItem);
+            });
+        }
+        
+        // Update progress statistics
+        function updateProgressStats() {
+            let workouts = [];
+            try {
+                const savedWorkouts = localStorage.getItem('gymjournal_workouts');
+                if (savedWorkouts) {
+                    workouts = JSON.parse(savedWorkouts);
+                    if (!Array.isArray(workouts)) {
+                        workouts = [];
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки тренировок:', error);
+                workouts = [];
+            }
+            
+            const progressList = document.getElementById('progressList');
+            if (!progressList) return;
+            
+            // Clear current list
+            progressList.innerHTML = '';
+            
+            if (workouts.length < 2) {
+                progressList.innerHTML = '<p style="text-align: center; color: #666;">Добавьте несколько тренировок, чтобы увидеть статистику прогресса.</p>';
+                return;
+            }
+            
+            // Group exercises by name across all workouts
+            const exercisesMap = {};
+            
+            workouts.forEach(workout => {
+                if (workout.exercises && Array.isArray(workout.exercises)) {
+                    workout.exercises.forEach(exercise => {
+                        if (!exercise || !exercise.name || !exercise.muscleGroup) return;
+                        
+                        const key = `${exercise.name} (${exercise.muscleGroup})`;
+                        
+                        if (!exercisesMap[key]) {
+                            exercisesMap[key] = [];
+                        }
+                        
+                        // Calculate max weight for this exercise in this workout
+                        let maxWeight = 0;
+                        if (exercise.sets && Array.isArray(exercise.sets)) {
+                            exercise.sets.forEach(set => {
+                                if (set && set.weight && set.weight > maxWeight) {
+                                    maxWeight = set.weight;
+                                }
+                            });
+                        }
+                        
+                        exercisesMap[key].push({
+                            date: workout.date || '',
+                            maxWeight: maxWeight,
+                            workout: workout
+                        });
+                    });
+                }
+            });
+            
+            // Create progress items for each exercise
+            let progressItemsAdded = 0;
+            
+            Object.keys(exercisesMap).forEach(key => {
+                const exerciseWorkouts = exercisesMap[key];
+                
+                // Sort by date
+                exerciseWorkouts.sort((a, b) => {
+                    const dateA = a.date ? new Date(a.date) : new Date(0);
+                    const dateB = b.date ? new Date(b.date) : new Date(0);
+                    return dateA - dateB;
+                });
+                
+                // Only show progress if we have at least 2 workouts for this exercise
+                if (exerciseWorkouts.length >= 2) {
+                    const firstWorkout = exerciseWorkouts[0];
+                    const lastWorkout = exerciseWorkouts[exerciseWorkouts.length - 1];
+                    
+                    const progress = lastWorkout.maxWeight - firstWorkout.maxWeight;
+                    const progressPercent = firstWorkout.maxWeight > 0 ? 
+                        ((progress / firstWorkout.maxWeight) * 100).toFixed(1) : '100';
+                    
+                    let progressClass, progressIcon, progressText;
+                    
+                    if (progress > 0) {
+                        progressClass = 'progress-up';
+                        progressIcon = 'fas fa-arrow-up';
+                        progressText = `Прогресс: +${progress} кг (+${progressPercent}%)`;
+                    } else if (progress < 0) {
+                        progressClass = 'progress-down';
+                        progressIcon = 'fas fa-arrow-down';
+                        progressText = `Регресс: ${progress} кг (${progressPercent}%)`;
+                    } else {
+                        progressClass = 'progress-neutral';
+                        progressIcon = 'fas fa-minus';
+                        progressText = 'Без изменений';
+                    }
+                    
+                    const progressItem = document.createElement('div');
+                    progressItem.className = 'progress-item';
+                    progressItem.innerHTML = `
+                        <div class="progress-icon ${progressClass}">
+                            <i class="${progressIcon}"></i>
+                        </div>
+                        <div class="progress-info">
+                            <h4>${key}</h4>
+                            <p>${progressText}</p>
+                            <p style="font-size: 14px; color: #666;">
+                                Первая тренировка: ${firstWorkout.maxWeight} кг, 
+                                Последняя: ${lastWorkout.maxWeight} кг
+                            </p>
+                        </div>
+                    `;
+                    
+                    progressList.appendChild(progressItem);
+                    progressItemsAdded++;
+                }
+            });
+            
+            if (progressItemsAdded === 0) {
+                progressList.innerHTML = '<p style="text-align: center; color: #666;">Недостаточно данных для анализа прогресса.</p>';
+            }
+        }
+        
+        // Show export modal
+        function showExportModal() {
+            let workouts = [];
+            let customExercisesData = {};
+            
+            try {
+                const savedWorkouts = localStorage.getItem('gymjournal_workouts');
+                if (savedWorkouts) {
+                    workouts = JSON.parse(savedWorkouts);
+                }
+                
+                const savedCustomExercises = localStorage.getItem('gymjournal_custom_exercises');
+                if (savedCustomExercises) {
+                    customExercisesData = JSON.parse(savedCustomExercises);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных для экспорта:', error);
+            }
+            
+            const exportData = {
+                workouts: workouts,
+                customExercises: customExercisesData,
+                exportDate: new Date().toISOString()
+            };
+            
+            document.getElementById('exportDataContent').textContent = JSON.stringify(exportData, null, 2);
+            document.getElementById('exportModal').style.display = 'flex';
+        }
+        
+        // Show import modal
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+            document.getElementById('importDataText').value = '';
+        }
+        
+        // Copy export data to clipboard
+        function copyExportData() {
+            const exportContent = document.getElementById('exportDataContent').textContent;
+            
+            navigator.clipboard.writeText(exportContent)
+                .then(() => {
+                    alert('Данные скопированы в буфер обмена!');
+                })
+                .catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                    alert('Не удалось скопировать данные. Попробуйте выделить и скопировать вручную.');
+                });
+        }
+        
+        // Import data from JSON
+        function importData() {
+            const importText = document.getElementById('importDataText').value;
+            
+            if (!importText.trim()) {
+                alert('Введите данные для импорта!');
+                return;
+            }
+            
+            try {
+                const importedData = JSON.parse(importText);
+                
+                // Import workouts
+                if (importedData.workouts && Array.isArray(importedData.workouts)) {
+                    localStorage.setItem('gymjournal_workouts', JSON.stringify(importedData.workouts));
+                } else {
+                    throw new Error('Неправильный формат данных тренировок.');
+                }
+                
+                // Import custom exercises if available
+                if (importedData.customExercises && typeof importedData.customExercises === 'object') {
+                    localStorage.setItem('gymjournal_custom_exercises', JSON.stringify(importedData.customExercises));
+                }
+                
+                // Close modal
+                document.getElementById('importModal').style.display = 'none';
+                
+                // Update UI
+                loadCustomExercises();
+                loadWorkouts();
+                updateProgressStats();
+                
+                alert(`Успешно импортировано ${importedData.workouts.length} тренировок!`);
+            } catch (error) {
+                alert(`Ошибка импорта: ${error.message}`);
+            }
+        }
+        
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Вы уверены, что хотите удалить все данные тренировок? Это действие нельзя отменить.')) {
+                localStorage.removeItem('gymjournal_workouts');
+                localStorage.removeItem('gymjournal_custom_exercises');
+                loadWorkouts();
+                updateProgressStats();
+                loadCustomExercises();
+                alert('Все данные удалены!');
+            }
+        }
+        
+        // Global functions for event handlers
+        window.toggleCustomExerciseForm = toggleCustomExerciseForm;
+        window.removeExerciseForm = removeExerciseForm;
+        window.addSetRow = addSetRow;
+        window.deleteSetRow = deleteSetRow;
+        window.saveExercise = saveExercise;
+        window.removeExerciseFromWorkout = removeExerciseFromWorkout;
+    </script>
+</body>
+</html>
